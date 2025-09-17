@@ -1,0 +1,16 @@
+### Test /ask endpoint
+POST http://localhost:3000/ask
+Content-Type: application/json
+
+{
+  "prompt": "Write a JavaScript function to sum an array of numbers",
+  "sessionId": "test-session-1"
+}
+
+### Test /stop endpoint
+POST http://localhost:3000/stop
+Content-Type: application/json
+
+{
+  "sessionId": "test-session-1"
+}
