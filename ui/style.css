@@ -145,7 +145,7 @@ body {
     outline: none;
     box-shadow: none;
     resize: none;
-    overflow-y: hidden;
+    overflow-y: scroll;
     font-size: 1rem;
     color: var(--text-primary);
     min-height: 32px;
@@ -155,6 +155,10 @@ body {
 
 .input-wrapper textarea::placeholder {
     color: var(--text-secondary);
+}
+
+.input-wrapper textarea::-webkit-scrollbar {
+    display: none;
 }
 
 .custom-dropdown {
