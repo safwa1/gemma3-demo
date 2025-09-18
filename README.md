@@ -1,116 +1,134 @@
 # Ollama Chat Web App
 
-A web-based chat interface powered by the **Ollama Gemma3 model** (`gemma3:270m`).  
-Supports **streaming responses**, **stop generation**, **markdown**, and **code highlighting**.
+A sleek web-based chat interface powered by your local Ollama models. Now includes a professional model selector and per-request model control.
+
+Supports streaming responses, stop generation, markdown rendering, and code syntax highlighting.
 
 ---
 
 ## Features
 
-- Real-time response streaming from Gemma3 model.
-- Stop generation mid-response.
-- Markdown support with syntax highlighting for code.
-- Responsive and full-screen chat interface.
+- Real-time streaming responses from Ollama.  
+- Professional chat UI with a polished custom dropdown to choose the model.  
+- Per-request model selection (e.g., gemma3:270m, gemma3:1b, deepseek-r1:1.5b).  
+- Stop generation mid-response.  
+- Markdown support with syntax highlighting for code blocks.  
+- Responsive, full-screen chat interface.
 
 ---
 
 ## Requirements
 
-- **Ollama**: Must be installed and running locally.  
-- **Gemma3 model**: `gemma3:270m` installed.  
-- **Node.js / Bun runtime**: For running the backend server.  
-- **Hono framework**: Lightweight HTTP server.
+- Ollama installed and running locally.  
+- Models installed in Ollama (at least one of):
+  - `gemma3:270m`
+  - `gemma3:1b`
+  - `deepseek-r1:1.5b`
+- Bun (or Node-compatible Bun runtime) to run the dev servers.  
+- Hono framework is used on the backend (already included via dependencies).
 
 ---
 
 ## Installation
 
-1. **Install Ollama** (if not already installed):  
-   Follow instructions at [https://ollama.com](https://ollama.com).
+1) Install Ollama (if not installed):  
+   https://ollama.com
 
-2. **Install Gemma3 model**:  
+2) Pull one or more models you want to use, for example:
 
    ```bash
    ollama run gemma3:270m
+   ollama run gemma3:1b
+   ollama run deepseek-r1:1.5b
    ```
 
-3. **Clone this repository**:
+3) Clone this repository:
 
    ```bash
    git clone https://github.com/safwa1/gemma3-demo
    cd gemma3-demo
    ```
 
-4. **Install dependencies**:
-   If using Bun:
+4) Install dependencies (Bun):
 
    ```bash
    bun install
    ```
 
-5. **Start the backend server**:
+5) Start the app (backend + UI):
 
    ```bash
    bun run dev
    ```
 
-   The server will run at `http://localhost:3000`.
-
-6. **Open the frontend**:
-   Open `http://localhost:3001` in a browser.
+   - Backend API: http://localhost:3000  
+   - Frontend UI: http://localhost:3001
 
 ---
 
 ## Usage
 
-1. Type your message in the input field.
-2. Press **Enter** to send.
-3. Responses will appear in real-time, streamed from Gemma3.
-4. Click the **stop button** to stop generation mid-response.
+- Choose a model using the dropdown in the input area.  
+- Type your message, then press Enter to send.  
+- Responses stream in real time.  
+- Click the stop button to cancel an in-progress generation.
 
 ---
 
 ## Backend Endpoints
 
-- **POST /ask**
-
-  - Starts a streaming response.
+- POST /ask
+  - Streams a completion from the selected or default model.
   - Request JSON:
 
     ```json
     {
       "prompt": "Your message here",
-      "sessionId": "unique-session-id"
+      "sessionId": "unique-session-id",
+      "model": "gemma3:270m"
     }
     ```
 
-- **POST /stop**
+  - Notes: `model` is optional; defaults to `gemma3:1b` when not provided.
 
-  - Stops a streaming generation.
+- POST /ask2
+  - Alternative endpoint supporting an optional system prompt.
   - Request JSON:
 
     ```json
     {
-      "sessionId": "unique-session-id"
+      "prompt": "Your message here",
+      "sessionId": "unique-session-id",
+      "systemPrompt": "You are a helpful assistant...",
+      "model": "deepseek-r1:1.5b"
     }
+    ```
+
+  - Notes: `model` is optional; defaults to `deepseek-r1:1.5b` when not provided.
+
+- POST /stop
+  - Stops a streaming generation for the given session.
+  - Request JSON:
+
+    ```json
+    { "sessionId": "unique-session-id" }
     ```
 
 ---
 
-## Frontend Features
+## Testing with test.http
 
-- Full-screen chat area.
-- Auto-growing input textarea.
-- Typing indicator for bot.
-- Markdown and syntax highlighting using `marked` and `highlight.js`.
-- Stop button integrated with streaming responses.
+You can quickly exercise the endpoints using the included test file:
+
+- test.http contains example requests for /ask, /ask2, and /stop, including how to pass the `model` parameter.
 
 ---
 
+
 ## Notes
 
-- Ensure **Ollama** is running and the **Gemma3 model** is active before starting the server.
-- For real-time streaming, **modern browsers** with `ReadableStream` support are required.
+- Ensure Ollama is running and that the models you plan to use are already pulled.  
+- Modern browsers with ReadableStream support are required for streaming.
 
 ---
 
