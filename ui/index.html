@@ -1,22 +1,51 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ollama Chat Demo</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"/>
+    <title>Pro AI Chat</title>
+    <!-- Google Fonts for a modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&Nunito:ital,wght@0,200..1000;1,200..1000&family=Fira+Code&display=swap"
+          rel="stylesheet">
+    <!-- Syntax Highlighting theme -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<header class="header">
+    <h1>Ollama AI Chat</h1>
+</header>
+
 <div class="chat-container">
     <div class="messages" id="messages"></div>
     <div class="input-area">
-        <textarea id="prompt" placeholder="Type your message..." rows="1"></textarea>
-        <button id="stop" class="stop-button">
-            <svg class="stop-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 6h12v12H6V6z"/>
-            </svg>
-        </button>
+        <div class="input-area-content">
+            <div class="input-wrapper" id="input-wrapper">
+                <div class="custom-dropdown" id="model-dropdown" style="position: absolute">
+                    <button class="dropdown-trigger" id="model-trigger" type="button" data-value="gemma3:270m">
+                        <span>gemma3:270m</span>
+                        <svg class="arrow" fill="none" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/>
+                        </svg>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-item" data-value="gemma3:270m">gemma3:270m</li>
+                        <li class="dropdown-item" data-value="gemma3:1b">gemma3:1b</li>
+                        <li class="dropdown-item" data-value="deepseek-r1:1.5b">deepseek-r1:1.5b</li>
+                    </ul>
+                </div>
+                <textarea id="prompt" placeholder="Ask anything..." rows="1" style="margin-bottom: 2em"></textarea>
+                <button id="stop" class="stop-button">
+                    <svg class="stop-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2.5" y="2.5" width="11" height="11" rx="1.5" fill="#5E3838" stroke="#DB5C5C"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -25,3 +54,4 @@
 <script src="app.js"></script>
 </body>
 </html>
+

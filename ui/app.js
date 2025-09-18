@@ -10,8 +10,9 @@ marked.setOptions({
 const textarea = document.getElementById("prompt");
 
 function autoGrow() {
-    textarea.style.height = "auto";
-    textarea.style.height = Math.min(textarea.scrollHeight, 200) + "px";
+    const minHeight = 32; // Corresponds to min-height in CSS
+    textarea.style.height = `${minHeight}px`;
+    textarea.style.height = Math.min(textarea.scrollHeight, 250) + "px";
 }
 
 textarea.addEventListener("input", autoGrow);
@@ -20,6 +21,37 @@ textarea.addEventListener("focus", autoGrow);
 const messagesEl = document.getElementById("messages");
 const inputEl = document.getElementById("prompt");
 const stopButton = document.getElementById("stop");
+
+const inputWrapper = document.getElementById("input-wrapper");
+textarea.addEventListener('focus', () => inputWrapper.classList.add('focused'));
+textarea.addEventListener('blur', () => inputWrapper.classList.remove('focused'));
+
+const dropdown = document.getElementById("model-dropdown");
+const modelTrigger = document.getElementById("model-trigger");
+const modelEl = modelTrigger; // For compatibility with askModel function
+
+modelTrigger.addEventListener('click', () => {
+    dropdown.classList.toggle('active');
+});
+
+document.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+        const value = item.getAttribute('data-value');
+        const text = item.textContent;
+
+        modelTrigger.querySelector('span').textContent = text;
+        modelTrigger.setAttribute('data-value', value);
+
+        dropdown.classList.remove('active');
+    });
+});
+
+window.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove('active');
+    }
+});
+
 
 const sessionId =
     Date.now().toString(36) + Math.random().toString(36).substring(2);
@@ -64,7 +96,7 @@ async function askModel(prompt) {
     const sessionId =
         Date.now().toString(36) + Math.random().toString(36).substring(2); // new per request
     textarea.value = "";
-    textarea.style.height = "auto";
+    autoGrow(); // Reset height after sending
     addMessage(prompt, "user");
     addTypingIndicator();
     stopButton.classList.add("show");
@@ -87,10 +119,12 @@ async function askModel(prompt) {
 
     stopButton.onclick = stopGeneration;
 
+    const selectedModel = modelEl ? modelEl.getAttribute('data-value') : undefined;
+
     const res = await fetch("http://localhost:3000/ask", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({prompt, sessionId}),
+        body: JSON.stringify({prompt, sessionId, model: selectedModel}),
     });
 
     const reader = res.body.getReader();
@@ -125,7 +159,7 @@ async function stopGeneration() {
         });
         const result = await res.json();
         console.log("Stop result:", result);
-        stopButton.classList.remove("show"); // Hide stop button
+        stopButton.classList.remove("show");
     } catch (error) {
         console.error("Error stopping generation:", error);
     }
