@@ -1,5 +1,6 @@
 import {Hono} from "hono";
 import {cors} from "hono/cors";
+import {getOllamaModels, getOllamaModelsDetailed} from "./ollama-cli";
 
 const app = new Hono();
 
@@ -36,7 +37,7 @@ app.post("/ask", async (c) => {
 
     if (!response.ok || !response.body) {
         activeControllers.delete(sessionId);
-        return c.json({ error: "Failed to connect to Ollama" }, 500);
+        return c.text("Failed to connect to Ollama", 500);
     }
 
     const stream = new ReadableStream({
@@ -125,7 +126,7 @@ app.post("/ask2", async (c) => {
 
     if (!response.ok || !response.body) {
         activeControllers.delete(sessionId);
-        return c.json({ error: "Failed to connect to Ollama" }, 500);
+        return c.text("Failed to connect to Ollama", 500);
     }
 
     const stream = new ReadableStream({
@@ -185,6 +186,62 @@ app.post("/stop", async (c) => {
         return c.json({stopped: true});
     }
     return c.json({stopped: false});
+});
+
+
+// ==== OLLAMA ENDPOINTS ====
+
+app.get('/models', async (c) => {
+    try {
+        const models = await getOllamaModels();
+        return c.json({
+            success: true,
+            data: models,
+            count: models.length
+        });
+    } catch (error) {
+        console.error('Error in /models endpoint:', error);
+        return c.json({
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error occurred'
+        }, 500);
+    }
+});
+
+app.get('/models/detailed', async (c) => {
+    try {
+        const models = await getOllamaModelsDetailed();
+        return c.json({
+            success: true,
+            data: models,
+            count: models.length
+        });
+    } catch (error) {
+        console.error('Error in /models/detailed endpoint:', error);
+        return c.json({
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error occurred'
+        }, 500);
+    }
+});
+
+app.get('/health', (c) => {
+    return c.json({
+        status: 'ok',
+        message: 'Ollama API is running',
+        timestamp: new Date().toISOString()
+    });
+});
+
+app.get('/', (c) => {
+    return c.json({
+        message: 'Ollama Models API',
+        endpoints: {
+            '/models': 'GET - List all model names',
+            '/models/detailed': 'GET - List all models with detailed information',
+            '/health': 'GET - Health check'
+        }
+    });
 });
 
 export default app;

@@ -15,7 +15,7 @@ Content-Type: application/json
 {
   "sessionId": "test-session-1",
   "systemPrompt": "You are a helpful assistant that answers concisely.",
-  "prompt": "Explain what Honojs is in one short sentence.",
+  "prompt": "Explain what Hono is in one short sentence.",
   "model": "deepseek-r1:1.5b"
 }
 

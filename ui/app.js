@@ -27,23 +27,13 @@ textarea.addEventListener('focus', () => inputWrapper.classList.add('focused'));
 textarea.addEventListener('blur', () => inputWrapper.classList.remove('focused'));
 
 const dropdown = document.getElementById("model-dropdown");
+const modelsList = document.getElementById("models-list");
 const modelTrigger = document.getElementById("model-trigger");
-const modelEl = modelTrigger; // For compatibility with askModel function
+const modelEl = modelTrigger;
+
 
 modelTrigger.addEventListener('click', () => {
     dropdown.classList.toggle('active');
-});
-
-document.querySelectorAll('.dropdown-item').forEach(item => {
-    item.addEventListener('click', () => {
-        const value = item.getAttribute('data-value');
-        const text = item.textContent;
-
-        modelTrigger.querySelector('span').textContent = text;
-        modelTrigger.setAttribute('data-value', value);
-
-        dropdown.classList.remove('active');
-    });
 });
 
 window.addEventListener('click', (e) => {
@@ -88,6 +78,17 @@ function addTypingIndicator() {
 function removeTypingIndicator() {
     const typing = document.getElementById("typing");
     if (typing) typing.remove();
+}
+
+async function getModels() {
+    try {
+        const res = await fetch("http://localhost:3000/models");
+        const data = await res.json();
+        return data.data;
+    } catch (error) {
+        console.error("Error fetching models:", error);
+        return [];
+    }
 }
 
 async function askModel(prompt) {
@@ -171,5 +172,22 @@ inputEl.addEventListener("keydown", (e) => {
         askModel(inputEl.value.trim());
     }
 });
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const models = await getModels();
+    models.toSorted().reverse().forEach(model => {
+        const li = document.createElement('li');
+        li.className = 'dropdown-item';
+        li.dataset.value = model;
+        li.textContent = model;
+        li.addEventListener('click', () => {
+            const value = li.getAttribute('data-value');
+            modelTrigger.querySelector('span').textContent = li.textContent;
+            modelTrigger.setAttribute('data-value', value);
+            dropdown.classList.remove('active');
+        });
+        modelsList.appendChild(li);
+    });
+})
 
 stopButton.addEventListener("click", stopGeneration);
